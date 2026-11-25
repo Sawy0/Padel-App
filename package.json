@@ -1,1 +1,1 @@
-{"type":"module","scripts":{"test":"node tests/scoring.test.js"}}
+{"type":"module","scripts":{"test":"node --experimental-default-type=module tests/scoring.test.js"}}

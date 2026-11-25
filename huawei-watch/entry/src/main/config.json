@@ -2,14 +2,21 @@
   "app": {
     "bundleName": "com.example.padelscore",
     "vendor": "example",
-    "version": { "code": 1, "name": "1.0.0" }
+    "version": {
+      "code": 1000000,
+      "name": "1.0.0"
+    }
   },
   "deviceConfig": {},
   "module": {
-    "package": "com.example.padelscore",
-    "name": ".entry",
-    "deviceType": ["liteWearable"],
-    "reqPermissions": [ { "name": "ohos.permission.READ_HEALTH_DATA" } ],
+    "deviceType": [
+      "liteWearable"
+    ],
+    "reqPermissions": [
+      {
+        "name": "ohos.permission.READ_HEALTH_DATA"
+      }
+    ],
     "distro": {
       "deliveryWithInstall": true,
       "moduleName": "entry",
@@ -18,18 +25,25 @@
     "abilities": [
       {
         "name": ".MainAbility",
-        "type": "page",
-        "launchType": "standard",
-        "visible": true,
+        "srcLanguage": "js",
+        "srcPath": "default",
         "icon": "$media:icon",
-        "label": "Padel Score"
+        "description": "$string:MainAbility_desc",
+        "label": "$string:MainAbility_label",
+        "type": "page",
+        "visible": true
       }
     ],
     "js": [
       {
-        "name": "default",
-        "pages": ["pages/index/index"],
-        "window": { "designWidth": 480, "autoDesignWidth": false }
+        "name": ".MainAbility",
+        "pages": [
+          "pages/index/index"
+        ],
+        "window": {
+          "designWidth": 408,
+          "autoDesignWidth": false
+        }
       }
     ]
   }

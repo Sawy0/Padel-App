@@ -1,6 +1,6 @@
 # Padel-App — padel scorer + training timer for Huawei Watch Fit 3
 
-A Lite Wearable (JS) app for the Huawei Watch Fit 3 (480×408 screen).
+A Lite Wearable (JS) app for the Huawei Watch Fit 3 (portrait screen, 408 px wide × 480 px tall; Huawei lists it as 480 × 408).
 
 ## Features
 - **Score**: `♥ - 15 - 30 - 40 - game`. At 40-40 → DEUCE → advantage (two in a row wins; lose the
@@ -30,14 +30,28 @@ sim/index.html          browser simulator running the real page code
 ## Run the simulator / tests
 ```
 npm test
-python3 -m http.server 8000      # then open http://localhost:8000/sim/index.html  (keys: Z / M = the two buttons)
+npx http-server -p 8000 .        # or: python3 -m http.server 8000
+# then open http://localhost:8000/sim/index.html  (keys: Z / M; ?view=Stats|Session|Settings|Profile jumps to a screen)
 ```
 
-## Install on the watch
-1. DevEco Studio → New Project → **Lite Wearable → Empty Ability (JS)**, name `Padel Score`.
-2. Copy `huawei-watch/entry/src/main/js/default/*` over the project's `entry/src/main/js/default/`,
-   and merge `config.json` (keep the template's icon/string resources).
-3. Run on the Fit 3 / Wearable Simulator (Huawei developer account + watch debug mode needed), or build a signed HAP for AppGallery.
+## Build & install on the watch
+`huawei-watch/` is a complete DevEco Studio project (Lite Wearable, FA model, JS). Tested with DevEco Studio 6.1.1 / HarmonyOS SDK 6.1.1(24).
+
+1. DevEco Studio → **File → Open** → select the `huawei-watch` folder (not the repo root).
+2. **Preview**: open `pages/index/index.hml` → Previewer, or Device Manager → Lite Wearable simulator.
+   Set the device to a **408 × 480 portrait rectangle** (Fit 3: 408 wide, 480 tall) rather than the 454 × 454 round default.
+3. **Command-line build** (unsigned HAP → `entry/build/default/outputs/default/`):
+   ```
+   cd huawei-watch
+   set DEVECO_SDK_HOME=C:\Program Files\Huawei\DevEco Studio\sdk
+   "C:\Program Files\Huawei\DevEco Studio\tools\node\node.exe" "C:\Program Files\Huawei\DevEco Studio\tools\hvigor\bin\hvigorw.js" --mode module -p product=default -p module=entry@default assembleHap --no-daemon
+   ```
+4. **Install on the Fit 3**: sign in under File → Project Structure → Signing Configs → *Automatically generate signature*
+   (needs a Huawei developer account), enable Developer mode on the watch via the Huawei Health app, connect, and Run.
+
+**Lite Wearable gotchas (the compiler enforces these):** no `class="{{...}}"` bindings, no `position`, no `line-height`,
+no per-side borders. Overlays live in a `<stack>`. `entry/src/main/js/package.json` must stay without a `"type"` field,
+or the build leaves `require()` unbundled and the app crashes with *require is not defined*.
 
 ## Recommended use with the watch's built-in Padel workout
 Third-party apps (as far as I know) cannot start or feed Huawei's own Padel workout, which is the only thing that

@@ -1,0 +1,5 @@
+{
+  "name": "padel-watch-js",
+  "private": true,
+  "description": "Intentionally has no \"type\" field. The repo-root package.json is type:module (for Node tests); without this file the Lite Wearable webpack build treats the sources as strict ESM and leaves Babel's require() calls unbundled, crashing on the watch with 'require is not defined'. Node tests run with --experimental-default-type=module instead."
+}
