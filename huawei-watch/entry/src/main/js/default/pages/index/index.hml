@@ -1,0 +1,91 @@
+<div class="root" focusable="true" onkey="onKey">
+
+  <!-- ============ SCORE ============ -->
+  <div class="view" if="{{isMatch}}">
+    <div class="top">
+      <text class="sets">{{setsLine}}</text>
+      <text class="drill" onclick="goTrain">{{drillLine}}</text>
+    </div>
+    <div class="panels">
+      <div class="panel me" onclick="tapMe">
+        <text class="who">YOU</text>
+        <text class="pts">{{p0}}</text>
+        <text class="games">Games {{g0}}</text>
+      </div>
+      <div class="panel opp" onclick="tapOpp">
+        <text class="who">THEM</text>
+        <text class="pts">{{p1}}</text>
+        <text class="games">Games {{g1}}</text>
+      </div>
+    </div>
+    <div class="status">
+      <text class="note">{{note}}</text>
+      <text class="undo" onclick="undo">UNDO</text>
+    </div>
+
+    <!-- golden point popup -->
+    <div class="overlay" if="{{pendingGolden}}">
+      <text class="ovTitle">Deuce again</text>
+      <text class="ovSub">Play golden point?</text>
+      <div class="ovRow">
+        <text class="btn yes" onclick="goldenYes">GOLDEN</text>
+        <text class="btn no" onclick="goldenNo">ADVANTAGE</text>
+      </div>
+    </div>
+
+    <!-- match finished -->
+    <div class="overlay" if="{{over}}">
+      <text class="ovTitle">{{overText}}</text>
+      <text class="ovSub">{{overScore}}</text>
+      <div class="ovRow">
+        <text class="btn no" onclick="undo">UNDO</text>
+        <text class="btn yes" onclick="newMatch">NEW MATCH</text>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WIN RATE ============ -->
+  <div class="view page" if="{{isStats}}">
+    <text class="h1">WIN RATE</text>
+    <text class="big">{{rate}}</text>
+    <text class="line">{{record}}   ({{matches}} matches)</text>
+    <text class="line">Form (latest first): {{form}}</text>
+    <text class="line">Streak: {{streak}}</text>
+    <text class="line">Points won: {{ptsRate}}   Games won: {{gamesRate}}</text>
+    <text class="link" onclick="clearHistory">{{clearText}}</text>
+  </div>
+
+  <!-- ============ TRAINING ============ -->
+  <div class="view page" if="{{isTrain}}">
+    <text class="h1" onclick="trainProgram">{{trProg}}  (tap to change)</text>
+    <text class="line dim">Block {{trStep}}   {{trPct}} done</text>
+    <text class="blk">{{trBlock}}</text>
+    <text class="big">{{trLeft}}</text>
+    <text class="line">{{trTip}}</text>
+    <text class="line dim">{{trNext}}</text>
+    <div class="ovRow">
+      <text class="btn yes" onclick="trainToggle">{{trBtn}}</text>
+      <text class="btn no" onclick="trainSkip">SKIP</text>
+      <text class="btn no" onclick="trainReset">RESET</text>
+    </div>
+  </div>
+
+  <!-- ============ SETTINGS ============ -->
+  <div class="view page" if="{{isSettings}}">
+    <text class="h1">SETTINGS</text>
+    <div class="row" onclick="tSets"><text class="k">Match</text><text class="v">{{setSets}}</text></div>
+    <div class="row" onclick="tGolden"><text class="k">Golden point</text><text class="v">{{setGolden}}</text></div>
+    <div class="row" onclick="tFinal"><text class="k">Final set</text><text class="v">{{setFinal}}</text></div>
+    <div class="row" onclick="tHaptics"><text class="k">Vibration</text><text class="v">{{setHaptics}}</text></div>
+    <div class="row" onclick="assignKey"><text class="k">My button</text><text class="v">{{setKey}}</text></div>
+    <text class="link" onclick="clearKey">Unassign button</text>
+  </div>
+
+  <!-- ============ TAB BAR ============ -->
+  <div class="tabs">
+    <text class="tab {{isMatch ? 'on' : ''}}" onclick="goMatch">SCORE</text>
+    <text class="tab {{isStats ? 'on' : ''}}" onclick="goStats">WIN %</text>
+    <text class="tab {{isTrain ? 'on' : ''}}" onclick="goTrain">TRAIN</text>
+    <text class="tab {{isSettings ? 'on' : ''}}" onclick="goSettings">SET</text>
+  </div>
+</div>

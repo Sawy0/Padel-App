@@ -1,0 +1,35 @@
+{
+  "app": {
+    "bundleName": "com.example.padelscore",
+    "vendor": "example",
+    "version": { "code": 1, "name": "1.0.0" }
+  },
+  "deviceConfig": {},
+  "module": {
+    "package": "com.example.padelscore",
+    "name": ".entry",
+    "deviceType": ["liteWearable"],
+    "distro": {
+      "deliveryWithInstall": true,
+      "moduleName": "entry",
+      "moduleType": "entry"
+    },
+    "abilities": [
+      {
+        "name": ".MainAbility",
+        "type": "page",
+        "launchType": "standard",
+        "visible": true,
+        "icon": "$media:icon",
+        "label": "Padel Score"
+      }
+    ],
+    "js": [
+      {
+        "name": "default",
+        "pages": ["pages/index/index"],
+        "window": { "designWidth": 480, "autoDesignWidth": false }
+      }
+    ]
+  }
+}
