@@ -84,6 +84,8 @@ export default {
   tSets() { ctl.toggleSetting('sets'); },
   tGolden() { ctl.toggleSetting('golden'); },
   tFinal() { ctl.toggleSetting('finalSet'); },
+  tGps() { ctl.toggleSetting('gps'); },
+  tTb() { ctl.toggleSetting('tb'); },
   tHaptics() { ctl.toggleSetting('haptics'); },
   assignKey() { ctl.beginAssign(); },
   clearKey() { ctl.clearKey(); }

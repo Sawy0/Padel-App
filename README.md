@@ -7,7 +7,7 @@ A Lite Wearable (JS) app for the Huawei Watch Fit 3 (480×408 screen).
   advantage point and it's back to deuce). When the game returns to deuce a **2nd time**, a popup
   offers **Golden point** (next point wins) or carry on with advantage. Settings: golden point
   `Ask` / `Always` / `Off`.
-- Sets to 6 (win by 2), tie-break at 6-6 (to 7), best of 3 or 1 set, optional 10-point super tie-break decider.
+- Sets: 6 games (win by 2) or short sets (first to 4, tie-break at 3-3); tie-break to 7, to 10, or off; best of 3 or 1 set; optional 10-point super tie-break decider.
 - **Input**: tap the YOU / THEM panel, **or** a physical button: Settings → *My button* → press the key you
   want for yourself; any other key then scores for THEM. **UNDO** reverts any point.
 - **Fitness session (FIT tab)**: live heart rate, duration, avg/max HR and an *estimated* calorie count

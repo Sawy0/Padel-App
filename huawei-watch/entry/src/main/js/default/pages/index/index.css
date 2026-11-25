@@ -32,9 +32,9 @@
 .blk { font-size: 36px; color: #FFFFFF; margin-top: 4px; }
 .line { font-size: 24px; color: #DCE1F2; margin-top: 6px; }
 .dim { color: #7E88A6; }
-.link { font-size: 22px; color: #7C9BFF; margin-top: 14px; }
+.link { font-size: 22px; color: #7C9BFF; margin-top: 8px; }
 
-.row { width: 440px; height: 46px; justify-content: space-between; align-items: center; border-bottom-width: 1px; border-color: #1E2640; }
+.row { width: 440px; height: 42px; justify-content: space-between; align-items: center; border-bottom-width: 1px; border-color: #1E2640; }
 .k { font-size: 24px; color: #DCE1F2; }
 .v { font-size: 24px; color: #C6F432; }
 

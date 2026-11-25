@@ -19,7 +19,9 @@ function newMatch(cfg) {
     cfg: {
       sets: cfg.sets === 1 ? 1 : 3,
       golden: cfg.golden || 'ask',          // 'ask' | 'always' | 'off'
-      finalSet: cfg.finalSet || 'set'       // 'set' | 'supertb'
+      finalSet: cfg.finalSet || 'set',      // 'set' | 'supertb'
+      gps: cfg.gps === 4 ? 4 : 6,           // games per set; 4 = short set (first to 4, tie-break at 3-3)
+      tb: (cfg.tb === 0 || cfg.tb === 10) ? cfg.tb : 7   // tie-break points; 0 = no tie-break
     },
     sets: [],            // finished sets: {g:[a,b], tb:[a,b]|null}
     games: [0, 0],
@@ -66,14 +68,16 @@ function endSet(s, t, viaTb) {
 }
 
 function winGame(s, t) {
-  var o = 1 - t;
-  if (s.games[t] + 1 >= 6 && s.games[t] + 1 - s.games[o] >= 2) {
+  var gps = s.cfg.gps;
+  var g = s.games[t] + 1;
+  if (g >= gps && (gps === 4 || g - s.games[1 - t] >= 2)) {
     endSet(s, t, false);          // endSet adds the deciding game
     return;
   }
   s.games[t]++;
   s.totals.games[t]++;
-  if (s.games[0] === 6 && s.games[1] === 6) {
+  var tbAt = gps === 4 ? 3 : 6;
+  if (s.cfg.tb > 0 && s.games[0] === tbAt && s.games[1] === tbAt) {
     s.tb = true;
     s.points = [0, 0];
     return;
@@ -89,7 +93,7 @@ function point(m, t) {
 
   if (s.tb) {
     s.points[t]++;
-    var target = s.superTb ? 10 : 7;
+    var target = s.superTb ? 10 : s.cfg.tb;
     if (s.points[t] >= target && s.points[t] - s.points[o] >= 2) endSet(s, t, true);
     return s;
   }

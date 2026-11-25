@@ -9,7 +9,7 @@ var UNDO_MAX = 40;
 var RECORD_MAX = 100;
 
 function defaults() {
-  return { sets: 3, golden: 'ask', finalSet: 'set', haptics: true, myKey: null, age: 30, weight: 75, sex: 'M' };
+  return { sets: 3, golden: 'ask', finalSet: 'set', gps: 6, tb: 7, haptics: true, myKey: null, age: 30, weight: 75, sex: 'M' };
 }
 
 var S = {
@@ -117,11 +117,13 @@ function toggleSetting(k) {
   if (k === 'sets') s.sets = s.sets === 3 ? 1 : 3;
   else if (k === 'golden') s.golden = cycle(['ask', 'always', 'off'], s.golden);
   else if (k === 'finalSet') s.finalSet = s.finalSet === 'set' ? 'supertb' : 'set';
+  else if (k === 'gps') s.gps = s.gps === 6 ? 4 : 6;
+  else if (k === 'tb') s.tb = s.tb === 7 ? 10 : (s.tb === 10 ? 0 : 7);
   else if (k === 'haptics') s.haptics = !s.haptics;
   else if (k === 'age') s.age = s.age >= 80 ? 15 : s.age + 5;
   else if (k === 'weight') s.weight = s.weight >= 140 ? 40 : s.weight + 5;
   else if (k === 'sex') s.sex = s.sex === 'M' ? 'F' : 'M';
-  if ((k === 'sets' || k === 'golden' || k === 'finalSet') && pristine(S.match)) S.match = Scoring.newMatch(s);  // apply right away
+  if ((k === 'sets' || k === 'golden' || k === 'finalSet' || k === 'gps' || k === 'tb') && pristine(S.match)) S.match = Scoring.newMatch(s);  // apply right away
   save(); redraw();
 }
 
@@ -219,6 +221,8 @@ function vm() {
     setSets: S.settings.sets === 3 ? 'Best of 3' : '1 set',
     setGolden: GOLD_TXT[S.settings.golden],
     setFinal: S.settings.finalSet === 'set' ? 'Full set' : 'Super TB',
+    setGps: S.settings.gps === 6 ? '6 games' : '4 (short)',
+    setTb: S.settings.tb ? S.settings.tb + ' pts' : 'Off',
     setHaptics: S.settings.haptics ? 'On' : 'Off',
     setKey: assignTxt, keyNote: S.keyNote, assigning: S.assigning,
     setAge: String(S.settings.age), setWeight: S.settings.weight + ' kg',

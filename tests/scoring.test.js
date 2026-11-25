@@ -84,6 +84,28 @@ t('best of 3 ends 2-0', function () {
   assert.equal(m.winner, 0); assert.deepEqual(m.setsWon, [2, 0]);
   assert.deepEqual(m.totals.games, [12, 0]);
 });
+t('short sets: first to 4, tie-break at 3-3', function () {
+  var m = Scoring.newMatch({ sets: 1, gps: 4 });
+  for (var i = 0; i < 4; i++) m = game(m, 0);
+  assert.equal(m.winner, 0); assert.deepEqual(m.sets[0].g, [4, 0]);
+  m = Scoring.newMatch({ sets: 1, gps: 4 });
+  for (i = 0; i < 3; i++) { m = game(m, 0); m = game(m, 1); }
+  assert.equal(m.tb, true);
+  m = pts(m, [0, 0, 0, 0, 0, 0, 0]); assert.equal(m.winner, 0); assert.deepEqual(m.sets[0].g, [4, 3]);
+});
+t('tie-break length 10, and tie-break off (win by 2 games)', function () {
+  var m = Scoring.newMatch({ sets: 1, tb: 10 });
+  for (var i = 0; i < 5; i++) { m = game(m, 0); m = game(m, 1); }
+  m = game(m, 0); m = game(m, 1);
+  m = pts(m, [0, 0, 0, 0, 0, 0, 0]); assert.equal(m.winner, null);   // 7 is not enough
+  m = pts(m, [0, 0, 0]); assert.equal(m.winner, 0);
+  m = Scoring.newMatch({ sets: 1, tb: 0 });
+  for (i = 0; i < 5; i++) { m = game(m, 0); m = game(m, 1); }
+  m = game(m, 0); m = game(m, 1);
+  assert.equal(m.tb, false); assert.deepEqual(m.games, [6, 6]);       // no tie-break, keep playing
+  m = game(m, 0); assert.equal(m.winner, null); m = game(m, 0); assert.equal(m.winner, 0);
+  assert.deepEqual(m.sets[0].g, [8, 6]);
+});
 t('session: calories from heart rate (Keytel) and duration', function () {
   var p = { age: 30, weight: 75, sex: 'M' }, se = Session.create();
   Session.tick(se, 60, 140, p); assert.equal(se.secs, 0);          // not running -> ignored

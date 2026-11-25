@@ -76,12 +76,14 @@
     <div class="row" onclick="tSets"><text class="k">Match</text><text class="v">{{setSets}}</text></div>
     <div class="row" onclick="tGolden"><text class="k">Golden point</text><text class="v">{{setGolden}}</text></div>
     <div class="row" onclick="tFinal"><text class="k">Final set</text><text class="v">{{setFinal}}</text></div>
-    <div class="row" onclick="tHaptics"><text class="k">Vibration</text><text class="v">{{setHaptics}}</text></div>
-    <div class="row" onclick="assignKey"><text class="k">My button</text><text class="v">{{setKey}}</text></div>
-    <text class="link" onclick="goProfile">Profile &amp; buttons &gt;</text>
+    <div class="row" onclick="tGps"><text class="k">Games per set</text><text class="v">{{setGps}}</text></div>
+    <div class="row" onclick="tTb"><text class="k">Tie-break</text><text class="v">{{setTb}}</text></div>
+    <text class="link" onclick="goProfile">More &gt;</text>
   </div>
   <div class="view page" if="{{isProfile}}">
-    <text class="h1">PROFILE (for calories)</text>
+    <text class="h1">MORE</text>
+    <div class="row" onclick="tHaptics"><text class="k">Vibration</text><text class="v">{{setHaptics}}</text></div>
+    <div class="row" onclick="assignKey"><text class="k">My button</text><text class="v">{{setKey}}</text></div>
     <div class="row" onclick="tAge"><text class="k">Age</text><text class="v">{{setAge}}</text></div>
     <div class="row" onclick="tWeight"><text class="k">Weight</text><text class="v">{{setWeight}}</text></div>
     <div class="row" onclick="tSex"><text class="k">Sex</text><text class="v">{{setSex}}</text></div>
