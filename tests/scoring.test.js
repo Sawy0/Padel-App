@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import Scoring from '../huawei-watch/entry/src/main/js/default/common/scoring.js';
-import Training from '../huawei-watch/entry/src/main/js/default/common/training.js';
+import Session from '../huawei-watch/entry/src/main/js/default/common/session.js';
 import Stats from '../huawei-watch/entry/src/main/js/default/common/stats.js';
 import Ctl from '../huawei-watch/entry/src/main/js/default/common/controller.js';
 
@@ -84,12 +84,16 @@ t('best of 3 ends 2-0', function () {
   assert.equal(m.winner, 0); assert.deepEqual(m.setsWon, [2, 0]);
   assert.deepEqual(m.totals.games, [12, 0]);
 });
-t('training program ticks, changes block, finishes', function () {
-  var tr = Training.create('quick'); tr.running = true;
-  assert.equal(Training.tick(tr, 119), null);
-  assert.equal(Training.tick(tr, 2), 'block'); assert.equal(tr.idx, 1); assert.equal(tr.left, 179);
-  assert.equal(Training.tick(tr, 5000), 'done'); assert.equal(tr.done, true);
-  assert.equal(Training.total('std'), 1800); assert.equal(Training.total('full'), 2700);
+t('session: calories from heart rate (Keytel) and duration', function () {
+  var p = { age: 30, weight: 75, sex: 'M' }, se = Session.create();
+  Session.tick(se, 60, 140, p); assert.equal(se.secs, 0);          // not running -> ignored
+  se.running = true;
+  Session.tick(se, 60, 140, p);                                    // 1 minute at 140 bpm
+  assert.ok(Math.abs(se.kcal - 12.95) < 0.1, 'kcal ' + se.kcal);     // ~12.95 kcal/min
+  Session.tick(se, 60, 0, p);                                      // no reading: time counts, kcal doesn't
+  assert.equal(se.secs, 120); assert.ok(se.kcal < 13);
+  assert.equal(Session.avgHr(se), 140); assert.equal(se.hrMax, 140);
+  assert.ok(Session.kcalPerMin(20, p) === 0);   // result is clamped, never negative
 });
 t('stats / win rate', function () {
   var w = { winner: 0, sets: [], setsWon: [2, 0], totals: { points: [50, 30], games: [12, 6] } };
@@ -100,7 +104,10 @@ t('stats / win rate', function () {
 });
 t('controller: key mapping, undo, history, golden popup', function () {
   var disk = '';
-  Ctl.init({ read: function (cb) { cb(disk); }, write: function (x) { disk = x; } }, null);
+  var hrCb = null;
+  Ctl.init({ read: function (cb) { cb(disk); }, write: function (x) { disk = x; } },
+           { vibrate: function () {}, redraw: function () {}, stopHR: function () { hrCb = null; },
+             startHR: function (cb) { hrCb = cb; } });
   Ctl.key(10); assert.equal(Ctl._state.match.totals.points[0], 0);   // unassigned = ignored
   Ctl.beginAssign(); Ctl.key(7);                                      // 7 = YOU
   Ctl.key(7); Ctl.key(99);                                            // other key = THEM
@@ -113,6 +120,10 @@ t('controller: key mapping, undo, history, golden popup', function () {
   for (i = 0; i < 44; i++) Ctl.point(0);                              // rest of the match
   assert.equal(Ctl.vm().over, true); assert.equal(Ctl.vm().rate, '100%');
   Ctl.undo(); assert.equal(Ctl.vm().rate, '--');                       // undo removes the saved record
-  assert.ok(JSON.parse(disk).settings.myKey === 7);                    // persisted
+  assert.ok(JSON.parse(disk).settings.myKey === 7);
+  Ctl.sessionToggle(); assert.ok(hrCb); hrCb(130);                      // session start subscribes to HR
+  Ctl._state.lastTick -= 30000; Ctl.tick();                             // 30 s pass
+  assert.equal(Ctl.vm().sesHr, '130'); assert.equal(Ctl.vm().sesTime, '0:30'); assert.ok(+Ctl.vm().sesKcal > 3);
+  Ctl.sessionToggle(); assert.equal(hrCb, null);                        // stop unsubscribes                    // persisted
 });
 console.log('\n' + n + ' tests passed');

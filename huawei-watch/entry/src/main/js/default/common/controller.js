@@ -1,15 +1,15 @@
 // App controller: all state + actions + a flat view-model. UI-agnostic so the watch page,
 // the browser simulator and the tests all drive the exact same code.
 import Scoring from './scoring.js';
-import Training from './training.js';
+import Session from './session.js';
 import Stats from './stats.js';
 
-var VIEWS = ['match', 'stats', 'train', 'settings'];
+var VIEWS = ['match', 'stats', 'session', 'settings'];
 var UNDO_MAX = 40;
 var RECORD_MAX = 100;
 
 function defaults() {
-  return { sets: 3, golden: 'ask', finalSet: 'set', haptics: true, myKey: null, program: 'std' };
+  return { sets: 3, golden: 'ask', finalSet: 'set', haptics: true, myKey: null, age: 30, weight: 75, sex: 'M' };
 }
 
 var S = {
@@ -18,16 +18,19 @@ var S = {
   match: null,
   undo: [],
   records: [],
-  train: null,
+  session: null,
+  hr: 0,
+  hrAt: 0,
+  settingsPage: 0,
   lastTick: 0,
   assigning: false,
   confirmClear: false,
   keyNote: '',
   adapter: null,
-  hooks: { vibrate: function () {}, redraw: function () {} }
+  hooks: { vibrate: function () {}, redraw: function () {}, startHR: function () {}, stopHR: function () {} }
 };
 S.match = Scoring.newMatch(S.settings);
-S.train = Training.create(S.settings.program);
+S.session = Session.create();
 
 function redraw() { S.hooks.redraw(); }
 function buzz(kind) { if (S.settings.haptics) S.hooks.vibrate(kind); }
@@ -35,7 +38,7 @@ function buzz(kind) { if (S.settings.haptics) S.hooks.vibrate(kind); }
 function save() {
   if (!S.adapter) return;
   S.adapter.write(JSON.stringify({
-    settings: S.settings, records: S.records, match: S.match, train: S.train, savedAt: Date.now()
+    settings: S.settings, records: S.records, match: S.match, session: S.session, savedAt: Date.now()
   }));
 }
 
@@ -50,9 +53,12 @@ function init(adapter, hooks, done) {
       S.settings = def;
       if (d.records) S.records = d.records;
       if (d.match) S.match = d.match;
-      if (d.train) {
-        S.train = d.train;
-        if (S.train.running && d.savedAt) Training.tick(S.train, Math.max(0, (Date.now() - d.savedAt) / 1000));
+      if (d.session) {
+        S.session = d.session;
+        if (S.session.running) {
+          if (d.savedAt) S.session.secs += Math.max(0, (Date.now() - d.savedAt) / 1000);
+          startHR();
+        }
       }
     } catch (e) { /* first run or unreadable file: keep defaults */ }
     S.lastTick = Date.now();
@@ -100,7 +106,7 @@ function newMatch() {
 
 function setView(v) {
   if (VIEWS.indexOf(v) < 0) return;
-  S.view = v; S.assigning = false; S.confirmClear = false; S.keyNote = '';
+  S.view = v; S.settingsPage = 0; S.assigning = false; S.confirmClear = false; S.keyNote = '';
   redraw();
 }
 
@@ -112,7 +118,10 @@ function toggleSetting(k) {
   else if (k === 'golden') s.golden = cycle(['ask', 'always', 'off'], s.golden);
   else if (k === 'finalSet') s.finalSet = s.finalSet === 'set' ? 'supertb' : 'set';
   else if (k === 'haptics') s.haptics = !s.haptics;
-  if (k !== 'haptics' && pristine(S.match)) S.match = Scoring.newMatch(s);  // apply right away
+  else if (k === 'age') s.age = s.age >= 80 ? 15 : s.age + 5;
+  else if (k === 'weight') s.weight = s.weight >= 140 ? 40 : s.weight + 5;
+  else if (k === 'sex') s.sex = s.sex === 'M' ? 'F' : 'M';
+  if ((k === 'sets' || k === 'golden' || k === 'finalSet') && pristine(S.match)) S.match = Scoring.newMatch(s);  // apply right away
   save(); redraw();
 }
 
@@ -133,36 +142,26 @@ function key(code) {
   point(code === S.settings.myKey ? 0 : 1);
 }
 
-// ---- training ----
-function trainToggle() {
-  var tr = S.train;
-  if (tr.done) S.train = tr = Training.create(S.settings.program);
-  tr.running = !tr.running;
+// ---- fitness session ----
+function startHR() {
+  S.hooks.startHR(function (hr) { S.hr = hr; S.hrAt = Date.now(); });
+}
+function sessionToggle() {
+  var se = S.session;
+  if (se.running) { se.running = false; S.hooks.stopHR(); }
+  else { S.session = se = Session.create(); se.running = true; se.started = true; S.hr = 0; startHR(); }
   S.lastTick = Date.now();
   buzz('short'); save(); redraw();
 }
-function trainSkip() {
-  if (S.train.done) return;
-  Training.next(S.train); buzz('short'); save(); redraw();
-}
-function trainReset() { S.train = Training.create(S.settings.program); save(); redraw(); }
-function trainProgram() {
-  var ids = [];
-  for (var i = 0; i < Training.PROGRAMS.length; i++) ids.push(Training.PROGRAMS[i].id);
-  S.settings.program = cycle(ids, S.settings.program);
-  S.train = Training.create(S.settings.program);
-  save(); redraw();
-}
+function currentHr() { return (Date.now() - S.hrAt < 15000) ? S.hr : 0; }
 
 // Call about once a second from the UI. Uses wall-clock delta so it never drifts.
 function tick() {
   var now = Date.now();
   var dt = (now - S.lastTick) / 1000;
   S.lastTick = now;
-  if (!S.train.running) return;
-  var ev = Training.tick(S.train, dt);
-  if (ev) buzz('long');
-  if (ev === 'done') save();
+  if (!S.session.running) return;
+  Session.tick(S.session, dt, currentHr(), S.settings);
   redraw();
 }
 
@@ -181,26 +180,27 @@ function mmss(sec) {
 var GOLD_TXT = { ask: 'Ask', always: 'Always', off: 'Off' };
 
 function vm() {
-  var m = S.match, d = Scoring.display(m), tr = S.train, prog = Training.find(tr.id);
+  var m = S.match, d = Scoring.display(m), se = S.session;
   var st = Stats.summary(S.records);
-  var cur = prog.blocks[tr.idx], nxt = prog.blocks[tr.idx + 1];
   var setsLine = 'Sets ' + m.setsWon[0] + '-' + m.setsWon[1];
   var done = Scoring.setSummary(m);
   if (done) setsLine += '  (' + done + ')';
   var won = m.winner === 0;
-  var fresh = tr.idx === 0 && tr.left === prog.blocks[0][1];
-  var drill = tr.done ? 'Training done!' :
-              tr.running ? cur[0] + '  ' + mmss(tr.left) :
-              fresh ? 'Training: tap to start' : 'Paused ' + mmss(tr.left);
+  var hr = se.running ? currentHr() : 0;
+  var hrTxt = hr ? String(hr) : '--';
+  var kcal = String(Math.round(se.kcal));
+  var strip = se.running ? Scoring.HEART + ' ' + hrTxt + '   ' + kcal + ' kcal' :
+              (se.started ? 'Session ended' : 'Tap: start session');
   var assignTxt = S.assigning ? 'Press the button now...' :
                   (S.settings.myKey === null ? 'Not set' : 'You = key ' + S.settings.myKey);
-  var pctDone = Math.round(100 * Training.elapsed(tr) / Training.total(tr.id));
   return {
     isMatch: S.view === 'match', isStats: S.view === 'stats',
-    isTrain: S.view === 'train', isSettings: S.view === 'settings',
+    isSession: S.view === 'session',
+    isSettings: S.view === 'settings' && S.settingsPage === 0,
+    isProfile: S.view === 'settings' && S.settingsPage === 1,
     // match
     p0: d.p[0], p1: d.p[1], g0: String(m.games[0]), g1: String(m.games[1]),
-    note: d.note, setsLine: setsLine, drillLine: drill,
+    note: d.note, setsLine: setsLine, stripLine: strip,
     pendingGolden: m.pendingGolden, over: m.winner !== null,
     overText: won ? 'YOU WIN!' : 'THEY WIN',
     overScore: Scoring.setSummary(m),
@@ -209,26 +209,30 @@ function vm() {
     rate: st.rate, record: st.wins + 'W - ' + st.losses + 'L', matches: String(st.n),
     form: st.form, streak: st.streak, ptsRate: st.ptsRate, gamesRate: st.gamesRate,
     clearText: S.confirmClear ? 'Tap again to erase' : 'Clear history',
-    // training
-    trProg: prog.name, trBlock: tr.done ? 'Done' : cur[0], trTip: tr.done ? 'Great session' : cur[2],
-    trLeft: mmss(tr.left), trStep: (tr.idx + 1) + '/' + prog.blocks.length,
-    trNext: tr.done ? '' : (nxt ? 'Next: ' + nxt[0] : 'Last block'),
-    trPct: pctDone + '%', trRunning: tr.running,
-    trBtn: tr.done ? 'RESTART' : (tr.running ? 'PAUSE' : 'START'),
+    // session
+    sesHr: hrTxt, sesKcal: kcal, sesTime: mmss(se.secs),
+    sesAvg: se.hrN > 0 ? String(Session.avgHr(se)) : '--',
+    sesMax: se.hrMax ? String(se.hrMax) : '--',
+    sesBtn: se.running ? 'STOP' : (se.started ? 'NEW SESSION' : 'START'),
+    sesNote: se.running && !hr ? 'Waiting for heart rate...' : 'Calories are an estimate',
     // settings
     setSets: S.settings.sets === 3 ? 'Best of 3' : '1 set',
     setGolden: GOLD_TXT[S.settings.golden],
     setFinal: S.settings.finalSet === 'set' ? 'Full set' : 'Super TB',
     setHaptics: S.settings.haptics ? 'On' : 'Off',
-    setKey: assignTxt, keyNote: S.keyNote, assigning: S.assigning
+    setKey: assignTxt, keyNote: S.keyNote, assigning: S.assigning,
+    setAge: String(S.settings.age), setWeight: S.settings.weight + ' kg',
+    setSex: S.settings.sex === 'M' ? 'Male' : 'Female'
   };
 }
+
+function settingsPage(n) { S.settingsPage = n; redraw(); }
 
 var Controller = {
   init: init, vm: vm, point: point, undo: undo, answerGolden: answerGolden, newMatch: newMatch,
   setView: setView, toggleSetting: toggleSetting, beginAssign: beginAssign, clearKey: clearKey,
-  key: key, trainToggle: trainToggle, trainSkip: trainSkip, trainReset: trainReset,
-  trainProgram: trainProgram, tick: tick, clearHistory: clearHistory,
+  key: key, sessionToggle: sessionToggle, tick: tick, clearHistory: clearHistory,
+  settingsPage: settingsPage,
   _state: S
 };
 export default Controller;

@@ -1,5 +1,6 @@
 import file from '@system.file';
 import vibrator from '@system.vibrator';
+import sensor from '@system.sensor';
 import ctl from '../../common/controller.js';
 
 var STORE = 'internal://app/padel.json';
@@ -25,7 +26,14 @@ export default {
     var self = this;
     ctl.init(adapter, {
       vibrate: function (kind) { vibrator.vibrate({ mode: kind === 'long' ? 'long' : 'short' }); },
-      redraw: function () { self.refresh(); }
+      redraw: function () { self.refresh(); },
+      startHR: function (cb) {
+        sensor.subscribeHeartRate({
+          success: function (ret) { cb(ret.heartRate); },
+          fail: function () {}
+        });
+      },
+      stopHR: function () { sensor.unsubscribeHeartRate(); }
     });
   },
   onShow() {
@@ -63,15 +71,16 @@ export default {
   // navigation
   goMatch() { ctl.setView('match'); },
   goStats() { ctl.setView('stats'); },
-  goTrain() { ctl.setView('train'); },
+  goSession() { ctl.setView('session'); },
   goSettings() { ctl.setView('settings'); },
 
   // stats / training / settings
   clearHistory() { ctl.clearHistory(); },
-  trainToggle() { ctl.trainToggle(); },
-  trainSkip() { ctl.trainSkip(); },
-  trainReset() { ctl.trainReset(); },
-  trainProgram() { ctl.trainProgram(); },
+  sessionToggle() { ctl.sessionToggle(); },
+  goProfile() { ctl.settingsPage(1); },
+  tAge() { ctl.toggleSetting('age'); },
+  tWeight() { ctl.toggleSetting('weight'); },
+  tSex() { ctl.toggleSetting('sex'); },
   tSets() { ctl.toggleSetting('sets'); },
   tGolden() { ctl.toggleSetting('golden'); },
   tFinal() { ctl.toggleSetting('finalSet'); },
