@@ -1,48 +1,64 @@
-.root { width: 480px; height: 408px; flex-direction: column; background-color: #0B1020; }
-.view { width: 480px; height: 352px; flex-direction: column; }
-.page { padding: 8px 20px; align-items: center; }
+/* Huawei Watch Fit 3: portrait rounded-rectangle AMOLED, 408 px wide x 480 px tall
+   (Huawei quotes it as "480 x 408"; the watch is worn taller than wide).
+   Lite Wearable CSS: no line-height, no position, no per-side borders, no class binding.
+   Rows near the top and bottom corners get extra inset so nothing is clipped by the rounded glass. */
 
-.top { width: 480px; height: 44px; justify-content: space-between; align-items: center; padding: 0px 16px; }
+.root { width: 408px; height: 480px; flex-direction: column; background-color: #0B1020; }
+.view { width: 408px; height: 416px; flex-direction: column; }
+.page { padding-top: 12px; padding-left: 20px; padding-right: 20px; align-items: center; }
+
+/* ---- score ---- */
+.top { width: 408px; height: 44px; justify-content: center; align-items: flex-end; }
 .sets { font-size: 22px; color: #9AA3BD; }
-.drill { font-size: 22px; color: #C6F432; }
 
-.panels { width: 480px; height: 238px; justify-content: space-around; align-items: center; }
-.panel { width: 224px; height: 226px; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; }
+.panels { width: 408px; height: 262px; justify-content: space-between; align-items: center; padding-left: 12px; padding-right: 12px; }
+.panel { width: 186px; height: 250px; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; }
 .me  { background-color: #C6F432; }
 .opp { background-color: #2F5BFF; }
 .who { font-size: 24px; color: #FFFFFF; }
-.me .who, .me .pts, .me .games { color: #0B1020; }
 .pts { font-size: 92px; color: #FFFFFF; }
 .games { font-size: 24px; color: #FFFFFF; }
 
-.status { width: 480px; height: 70px; justify-content: space-between; align-items: center; padding: 0px 20px; }
-.note { font-size: 28px; color: #C6F432; }
-.undo { width: 120px; height: 48px; line-height: 48px; text-align: center; font-size: 24px; color: #FFFFFF; background-color: #1E2640; border-radius: 24px; }
+.status { width: 408px; height: 64px; justify-content: space-between; align-items: center; padding-left: 20px; padding-right: 20px; }
+.note { font-size: 24px; color: #C6F432; }
+.undo { width: 112px; height: 48px; justify-content: center; align-items: center; background-color: #1E2640; border-radius: 24px; }
+.bt { font-size: 24px; color: #FFFFFF; text-align: center; }
 
-.overlay { position: absolute; left: 0px; top: 0px; width: 480px; height: 352px; flex-direction: column; align-items: center; justify-content: center; background-color: #0B1020EE; }
+.strip { width: 408px; height: 46px; justify-content: center; align-items: center; }
+.drill { font-size: 22px; color: #C6F432; }
+
+/* ---- popups ---- */
+.overlay { width: 408px; height: 416px; flex-direction: column; align-items: center; justify-content: center; background-color: #0B1020; }
 .ovTitle { font-size: 44px; color: #FFFFFF; }
 .ovSub { font-size: 26px; color: #CCCCCC; margin-top: 8px; margin-bottom: 20px; }
-.ovRow { width: 440px; justify-content: space-around; margin-top: 8px; }
-.btn { height: 56px; line-height: 56px; padding: 0px 20px; text-align: center; font-size: 24px; color: #FFFFFF; border-radius: 30px; }
-.yes { background-color: #C6F432; color: #0B1020; }
+.ovRow { width: 368px; justify-content: space-between; margin-top: 10px; }
+.btn { width: 176px; height: 60px; justify-content: center; align-items: center; border-radius: 30px; }
+.yes { background-color: #C6F432; }
 .no  { background-color: #1E2640; }
+.solo { width: 368px; justify-content: center; margin-top: 18px; }
 
-.h1 { font-size: 24px; color: #C6F432; margin-top: 6px; }
-.big { font-size: 64px; color: #FFFFFF; margin-top: 4px; margin-bottom: 4px; }
-.blk { font-size: 36px; color: #FFFFFF; margin-top: 4px; }
-.line { font-size: 24px; color: #DCE1F2; margin-top: 6px; }
+/* ---- pages ---- */
+.h1 { font-size: 24px; color: #C6F432; }
+.big { font-size: 72px; color: #FFFFFF; margin-top: 10px; margin-bottom: 10px; }
+.blk { font-size: 40px; color: #FFFFFF; margin-top: 14px; }
+.line { font-size: 24px; color: #DCE1F2; margin-top: 10px; }
 .dim { color: #7E88A6; }
-.link { font-size: 22px; color: #7C9BFF; margin-top: 8px; }
+.link { font-size: 22px; color: #7C9BFF; margin-top: 14px; }
 
-.row { width: 440px; height: 42px; justify-content: space-between; align-items: center; border-bottom-width: 1px; border-color: #1E2640; }
-.k { font-size: 24px; color: #DCE1F2; }
-.v { font-size: 24px; color: #C6F432; }
+.row { width: 368px; height: 50px; justify-content: space-between; align-items: center; margin-top: 8px; padding-left: 14px; padding-right: 14px; background-color: #121832; border-radius: 14px; }
+.k { font-size: 22px; color: #DCE1F2; }
+.v { font-size: 22px; color: #C6F432; }
 
-.tabs { width: 480px; height: 56px; background-color: #121832; justify-content: space-around; align-items: center; }
-.tab { width: 112px; height: 44px; line-height: 44px; text-align: center; font-size: 20px; color: #7E88A6; border-radius: 22px; }
-.on { color: #0B1020; background-color: #C6F432; }
-
-.tiles { width: 440px; justify-content: space-around; margin-top: 8px; }
-.tile { width: 200px; height: 96px; flex-direction: column; align-items: center; justify-content: center; background-color: #1E2640; border-radius: 20px; }
+.tiles { width: 368px; justify-content: space-between; margin-top: 14px; }
+.tile { width: 178px; height: 110px; flex-direction: column; align-items: center; justify-content: center; background-color: #1E2640; border-radius: 20px; }
 .tv { font-size: 48px; color: #C6F432; }
 .tk { font-size: 18px; color: #9AA3BD; }
+
+/* ---- bottom bar: sits in the rounded corners, so inset 20px each side ---- */
+.tabs { width: 408px; height: 64px; padding-left: 20px; padding-right: 20px; padding-bottom: 8px; background-color: #121832; justify-content: space-between; align-items: center; }
+.tab { width: 86px; height: 44px; justify-content: center; align-items: center; border-radius: 22px; }
+.tt { font-size: 20px; color: #7E88A6; text-align: center; }
+.on { background-color: #C6F432; }
+
+/* last so it overrides .bt/.tt/.who/.pts/.games colors */
+.dark { color: #0B1020; }

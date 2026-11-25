@@ -1,0 +1,7 @@
+{
+  "string": [
+    { "name": "app_name", "value": "Padel Score" },
+    { "name": "MainAbility_desc", "value": "Padel scorer and fitness session" },
+    { "name": "MainAbility_label", "value": "Padel Score" }
+  ]
+}

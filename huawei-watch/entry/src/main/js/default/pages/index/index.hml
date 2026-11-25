@@ -1,26 +1,30 @@
-<div class="root" focusable="true" onkey="onKey">
+<div class="root" onkey="onKey">
 
   <!-- ============ SCORE ============ -->
-  <div class="view" if="{{isMatch}}">
-    <div class="top">
-      <text class="sets">{{setsLine}}</text>
-      <text class="drill" onclick="goSession">{{stripLine}}</text>
-    </div>
-    <div class="panels">
-      <div class="panel me" onclick="tapMe">
-        <text class="who">YOU</text>
-        <text class="pts">{{p0}}</text>
-        <text class="games">Games {{g0}}</text>
+  <stack class="view" if="{{isMatch}}">
+    <div class="view">
+      <div class="top">
+        <text class="sets">{{setsLine}}</text>
       </div>
-      <div class="panel opp" onclick="tapOpp">
-        <text class="who">THEM</text>
-        <text class="pts">{{p1}}</text>
-        <text class="games">Games {{g1}}</text>
+      <div class="panels">
+        <div class="panel me" onclick="tapMe">
+          <text class="who dark">YOU</text>
+          <text class="pts dark">{{p0}}</text>
+          <text class="games dark">Games {{g0}}</text>
+        </div>
+        <div class="panel opp" onclick="tapOpp">
+          <text class="who">THEM</text>
+          <text class="pts">{{p1}}</text>
+          <text class="games">Games {{g1}}</text>
+        </div>
       </div>
-    </div>
-    <div class="status">
-      <text class="note">{{note}}</text>
-      <text class="undo" onclick="undo">UNDO</text>
+      <div class="status">
+        <text class="note">{{note}}</text>
+        <div class="undo" onclick="undo"><text class="bt">UNDO</text></div>
+      </div>
+      <div class="strip" onclick="goSession">
+        <text class="drill">{{stripLine}}</text>
+      </div>
     </div>
 
     <!-- golden point popup -->
@@ -28,8 +32,8 @@
       <text class="ovTitle">Deuce again</text>
       <text class="ovSub">Play golden point?</text>
       <div class="ovRow">
-        <text class="btn yes" onclick="goldenYes">GOLDEN</text>
-        <text class="btn no" onclick="goldenNo">ADVANTAGE</text>
+        <div class="btn yes" onclick="goldenYes"><text class="bt dark">GOLDEN</text></div>
+        <div class="btn no" onclick="goldenNo"><text class="bt">ADVANTAGE</text></div>
       </div>
     </div>
 
@@ -38,11 +42,11 @@
       <text class="ovTitle">{{overText}}</text>
       <text class="ovSub">{{overScore}}</text>
       <div class="ovRow">
-        <text class="btn no" onclick="undo">UNDO</text>
-        <text class="btn yes" onclick="newMatch">NEW MATCH</text>
+        <div class="btn no" onclick="undo"><text class="bt">UNDO</text></div>
+        <div class="btn yes" onclick="newMatch"><text class="bt dark">NEW MATCH</text></div>
       </div>
     </div>
-  </div>
+  </stack>
 
   <!-- ============ WIN RATE ============ -->
   <div class="view page" if="{{isStats}}">
@@ -51,7 +55,8 @@
     <text class="line">{{record}}   ({{matches}} matches)</text>
     <text class="line">Form (latest first): {{form}}</text>
     <text class="line">Streak: {{streak}}</text>
-    <text class="line">Points won: {{ptsRate}}   Games won: {{gamesRate}}</text>
+    <text class="line">Points won: {{ptsRate}}</text>
+    <text class="line">Games won: {{gamesRate}}</text>
     <text class="link" onclick="clearHistory">{{clearText}}</text>
   </div>
 
@@ -65,8 +70,8 @@
     <text class="blk">{{sesTime}}</text>
     <text class="line dim">Avg {{sesAvg}}   Max {{sesMax}} bpm</text>
     <text class="line dim">{{sesNote}}</text>
-    <div class="ovRow">
-      <text class="btn yes" onclick="sessionToggle">{{sesBtn}}</text>
+    <div class="solo">
+      <div class="btn yes" onclick="sessionToggle"><text class="bt dark">{{sesBtn}}</text></div>
     </div>
   </div>
 
@@ -92,10 +97,15 @@
   </div>
 
   <!-- ============ TAB BAR ============ -->
+  <!-- Lite Wearable can't bind class names, so each tab has an active and an idle variant. -->
   <div class="tabs">
-    <text class="tab {{isMatch ? 'on' : ''}}" onclick="goMatch">SCORE</text>
-    <text class="tab {{isStats ? 'on' : ''}}" onclick="goStats">WIN %</text>
-    <text class="tab {{isSession ? 'on' : ''}}" onclick="goSession">FIT</text>
-    <text class="tab {{isSettings || isProfile ? 'on' : ''}}" onclick="goSettings">SET</text>
+    <div class="tab on" if="{{isMatch}}" onclick="goMatch"><text class="tt dark">SCORE</text></div>
+    <div class="tab" if="{{!isMatch}}" onclick="goMatch"><text class="tt">SCORE</text></div>
+    <div class="tab on" if="{{isStats}}" onclick="goStats"><text class="tt dark">WIN %</text></div>
+    <div class="tab" if="{{!isStats}}" onclick="goStats"><text class="tt">WIN %</text></div>
+    <div class="tab on" if="{{isSession}}" onclick="goSession"><text class="tt dark">FIT</text></div>
+    <div class="tab" if="{{!isSession}}" onclick="goSession"><text class="tt">FIT</text></div>
+    <div class="tab on" if="{{isSettings || isProfile}}" onclick="goSettings"><text class="tt dark">SET</text></div>
+    <div class="tab" if="{{!(isSettings || isProfile)}}" onclick="goSettings"><text class="tt">SET</text></div>
   </div>
 </div>
