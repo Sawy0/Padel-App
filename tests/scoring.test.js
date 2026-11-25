@@ -84,6 +84,18 @@ t('best of 3 ends 2-0', function () {
   assert.equal(m.winner, 0); assert.deepEqual(m.setsWon, [2, 0]);
   assert.deepEqual(m.totals.games, [12, 0]);
 });
+t('tie-break: first to 7, but if it reaches 6-6 you need two clear points', function () {
+  function tbStart() { var m = Scoring.newMatch({ sets: 1 });
+    for (var i = 0; i < 5; i++) { m = game(m, 0); m = game(m, 1); } m = game(m, 0); return game(m, 1); }
+  var m = pts(tbStart(), [0, 0, 0, 0, 0, 0, 0]);               // 7-0 wins outright
+  assert.equal(m.winner, 0);
+  m = pts(tbStart(), [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0]);    // 7-5 wins (two clear)
+  assert.equal(m.winner, 0);
+  m = pts(tbStart(), [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]);    // 6-6
+  m = pts(m, [0]); assert.equal(m.winner, null);                // 7-6 not enough
+  m = pts(m, [1]); assert.equal(m.winner, null);                // 7-7
+  m = pts(m, [1, 1]); assert.equal(m.winner, 1);                // 7-9: two consecutive wins it
+});
 t('short sets: first to 4, tie-break at 3-3', function () {
   var m = Scoring.newMatch({ sets: 1, gps: 4 });
   for (var i = 0; i < 4; i++) m = game(m, 0);
