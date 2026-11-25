@@ -1,0 +1,57 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Padel watch simulator</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{ "imports": { "@system.file": "./stubs/file.js", "@system.vibrator": "./stubs/vibrator.js" } }
+</script>
+<style>
+ body{background:#1b1b1b;color:#aaa;font:14px system-ui;margin:0;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+ #watch{width:480px;height:408px;border-radius:56px;border:10px solid #444;overflow:hidden;background:#000;box-sizing:content-box;position:relative}
+ #screen{width:480px;height:408px;position:relative;overflow:hidden}
+ #screen div{display:flex;box-sizing:border-box;position:relative}
+ #screen text{display:block}
+ #screen .overlay{position:absolute}
+ #screen [onclick]{cursor:pointer}
+ code{background:#333;padding:1px 5px;border-radius:4px}
+ #log{height:18px}
+</style>
+<link rel="stylesheet" href="../huawei-watch/entry/src/main/js/default/pages/index/index.css">
+</head><body>
+<div id="watch"><div id="screen"></div></div>
+<div>Keys: <code>Z</code> = button A, <code>M</code> = button B. Assign A in Settings &rarr; My button; B is then automatically THEM.</div>
+<div id="log"></div>
+<script type="module">
+// Runs the REAL watch page (index.js + index.hml + index.css) in a browser.
+import def from '../huawei-watch/entry/src/main/js/default/pages/index/index.js';
+const base = '../huawei-watch/entry/src/main/js/default/pages/index/';
+const hml = await (await fetch(base + 'index.hml')).text();
+const doc = new DOMParser().parseFromString('<root>' + hml + '</root>', 'text/xml');
+
+const page = Object.assign({}, def, def.data);
+const ev = (expr) => { try { return new Function('with(this){return (' + expr + ')}').call(page); } catch (e) { return undefined; } };
+const interp = (s) => s.replace(/\{\{(.+?)\}\}/g, (_, e) => { const v = ev(e); return v === undefined ? '' : v; });
+const screen = document.getElementById('screen');
+
+function build(node, parent) {
+  if (node.nodeType === 3) { const t = interp(node.nodeValue).trim(); if (t) parent.append(t); return; }
+  if (node.nodeType !== 1) return;
+  const iff = node.getAttribute('if');
+  if (iff && !ev(iff.replace(/^\{\{|\}\}$/g, ''))) return;
+  const el = document.createElement(node.tagName === 'text' ? 'text' : 'div');
+  for (const a of node.attributes) {
+    if (a.name === 'class') el.className = interp(a.value);
+    else if (a.name === 'onclick') { el.setAttribute('onclick', ''); el.addEventListener('click', () => page[a.value]()); }
+  }
+  for (const c of node.childNodes) build(c, el);
+  parent.append(el);
+}
+function render() { screen.innerHTML = ''; for (const c of doc.documentElement.childNodes) build(c, screen); }
+
+const refresh = page.refresh;
+page.refresh = function () { refresh.call(page); render(); };
+page.onInit(); page.onShow(); render();
+
+const keymap = { z: 1, m: 2 };
+addEventListener('keydown', e => { const c = keymap[e.key.toLowerCase()]; if (c) page.onKey({ code: c, action: 0 }); });
+window.__page = page;
+</script></body></html>

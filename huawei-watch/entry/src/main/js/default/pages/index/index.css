@@ -1,0 +1,42 @@
+.root { width: 480px; height: 408px; flex-direction: column; background-color: #000000; }
+.view { width: 480px; height: 352px; flex-direction: column; }
+.page { padding: 8px 20px; align-items: center; }
+
+.top { width: 480px; height: 44px; justify-content: space-between; align-items: center; padding: 0px 16px; }
+.sets { font-size: 22px; color: #BBBBBB; }
+.drill { font-size: 22px; color: #F5C542; }
+
+.panels { width: 480px; height: 238px; justify-content: space-around; align-items: center; }
+.panel { width: 224px; height: 226px; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; }
+.me  { background-color: #0E6B5E; }
+.opp { background-color: #8A4A12; }
+.who { font-size: 24px; color: #E8E8E8; }
+.pts { font-size: 92px; color: #FFFFFF; }
+.games { font-size: 24px; color: #E8E8E8; }
+
+.status { width: 480px; height: 70px; justify-content: space-between; align-items: center; padding: 0px 20px; }
+.note { font-size: 28px; color: #F5C542; }
+.undo { width: 120px; height: 48px; line-height: 48px; text-align: center; font-size: 24px; color: #FFFFFF; background-color: #333333; border-radius: 24px; }
+
+.overlay { position: absolute; left: 0px; top: 0px; width: 480px; height: 352px; flex-direction: column; align-items: center; justify-content: center; background-color: #000000EE; }
+.ovTitle { font-size: 44px; color: #FFFFFF; }
+.ovSub { font-size: 26px; color: #CCCCCC; margin-top: 8px; margin-bottom: 20px; }
+.ovRow { width: 440px; justify-content: space-around; margin-top: 8px; }
+.btn { height: 56px; line-height: 56px; padding: 0px 20px; text-align: center; font-size: 24px; color: #FFFFFF; border-radius: 30px; }
+.yes { background-color: #0E6B5E; }
+.no  { background-color: #444444; }
+
+.h1 { font-size: 24px; color: #F5C542; margin-top: 6px; }
+.big { font-size: 64px; color: #FFFFFF; margin-top: 4px; margin-bottom: 4px; }
+.blk { font-size: 36px; color: #FFFFFF; margin-top: 4px; }
+.line { font-size: 24px; color: #DDDDDD; margin-top: 6px; }
+.dim { color: #888888; }
+.link { font-size: 22px; color: #6FB7FF; margin-top: 14px; }
+
+.row { width: 440px; height: 52px; justify-content: space-between; align-items: center; border-bottom-width: 1px; border-color: #333333; }
+.k { font-size: 24px; color: #DDDDDD; }
+.v { font-size: 24px; color: #F5C542; }
+
+.tabs { width: 480px; height: 56px; background-color: #111111; justify-content: space-around; align-items: center; }
+.tab { width: 112px; height: 44px; line-height: 44px; text-align: center; font-size: 20px; color: #888888; border-radius: 22px; }
+.on { color: #FFFFFF; background-color: #333333; }
